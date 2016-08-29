@@ -27,8 +27,9 @@
   "scripts": {
     "install-sdk": "rvm install --local",
     "install-rap-dependencies": "rap install",
-    "lint": "eslint .",
-    "pretest": "npm run lint"
+    "lint": "eslint *.js",
+    "pretest": "npm run lint",
+    "test": "ruff test/test.js"
   },
   "devDependencies": {
     "eslint": "^2.11.1",

@@ -34,7 +34,7 @@ var SysUsbDevice = driver({
     exports: {
         install: function () {
             var callback = getCallback(arguments[arguments.length - 1]);
-            var managerLength = callback ?  arguments.length - 1: arguments.length; 
+            var managerLength = callback ? arguments.length - 1 : arguments.length;
             for (var i = 0; i < managerLength; i++) {
                 this._devManagers.push(checkType(arguments[i], 'object'));
             }
@@ -120,7 +120,7 @@ var SysUsbDevice = driver({
 
         _listenUevent: function (callback) {
             var that = this;
-            this._message.on('uevent', function(event) {
+            this._message.on('uevent', function (event) {
                 var action = event.action;
                 if (EVENTS.indexOf(action) < 0) {
                     return;
