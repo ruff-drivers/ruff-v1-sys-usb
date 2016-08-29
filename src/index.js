@@ -9,10 +9,18 @@ var Message = require('./message');
 var USB_DRIVER_NAME = 'ehci-platform';
 var EVENTS = ['mount', 'unmount'];
 
+function getCallback(argument) {
+    if (typeof argument === 'function') {
+        return argument;
+    }
+
+    return null;
+}
+
 var SysUsbDevice = driver({
     attach: function (inputs, context) {
         this._driverInstalled = false;
-        this._devManagers = {};
+        this._devManagers = [];
         this._kernel = context.kernel || require('kernel-module');
         this._message = context.message || new Message();
     },
@@ -25,17 +33,12 @@ var SysUsbDevice = driver({
     },
     exports: {
         install: function () {
-            var callback;
-            this._devManagers = [];
-            var lastArgument = arguments[arguments.length - 1];
-            for (var i = 0; i < arguments.length - 1; i++) {
+            var callback = getCallback(arguments[arguments.length - 1]);
+            var managerLength = callback ?  arguments.length - 1: arguments.length; 
+            for (var i = 0; i < managerLength; i++) {
                 this._devManagers.push(checkType(arguments[i], 'object'));
             }
-            if (typeof lastArgument === 'function') {
-                callback = lastArgument;
-            } else {
-                this._devManagers.push(checkType(lastArgument, 'object'));
-            }
+
             var that = this;
 
             this.on('mount', function (devPath) {
