@@ -7,6 +7,7 @@ var driver = require('ruff-driver');
 var Message = require('./message');
 
 var USB_DRIVER_NAME = 'ehci-platform';
+var EVENTS = ['mount', 'unmount'];
 
 var SysUsbDevice = driver({
     attach: function (inputs, context) {
@@ -116,21 +117,18 @@ var SysUsbDevice = driver({
 
         _listenUevent: function (callback) {
             var that = this;
-            this._message.on('uevent', dispatch);
+            this._message.on('uevent', function(event) {
+                var action = event.action;
+                if (EVENTS.indexOf(action) < 0) {
+                    return;
+                }
+
+                that.emit(action, event.devPath);
+            });
+
             this._message.start(function () {
                 callback();
             });
-
-            function dispatch(event) {
-                switch (event.action) {
-                    case 'mount':
-                        that.emit('mount', event.devPath);
-                        break;
-                    case 'unmount':
-                        that.emit('unmount', event.devPath);
-                        break;
-                }
-            }
         }
     }
 });
