@@ -1,8 +1,7 @@
 {
     "models": [
+        "ruff-usb"
     ],
-    "inputs": {
-    },
-    "outputs": {
-    }
+    "power": null,
+    "ground": null
 }
