@@ -18,7 +18,7 @@ Sys-usb managers the `mount` and `unmout` behaviour of USB devices, which have b
 rap device add <device-id>
 
 # Then enter a supported model, for example:
-# ? model: ruff-usb
+# ? model: ruff-v1-sys-usb
 ```
 
 ## Usage

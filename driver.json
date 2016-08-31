@@ -1,6 +1,6 @@
 {
     "models": [
-        "ruff-usb"
+        "ruff-v1-sys-usb"
     ],
     "power": null,
     "ground": null
