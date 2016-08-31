@@ -22,7 +22,7 @@
     "ruff": ">=1.4.0 <1.5.0"
   },
   "boards": {
-    "ruff-mbd-v1": "*"
+    "ruff-mbd-v1": "^4.1.0"
   },
   "scripts": {
     "install-sdk": "rvm install --local",
