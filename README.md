@@ -18,7 +18,7 @@ Sys-usb managers the `mount` and `unmout` behaviour of USB devices, which have b
 rap device add <device-id>
 
 # Then enter a supported model, for example:
-# ? model:
+# ? model: ruff-usb
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ Here is the basic usage of this driver.
 ```js
 var cameraManager = new CameraManager();
 var audioManager = new AudioManger();
-usb.install(cameraManager, audioManager);
+$('#usb').install(cameraManager, audioManager);
 cameraManager.on('mount', function (camera)) {
     // camera is mounted, invoke methods of camera
 });
