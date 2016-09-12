@@ -4,6 +4,8 @@
 
 sys-usb provides a USB interface driver for USB devices. This driver works only for [Ruff MBD V1](https://rap.ruff.io/raps/ruff-mbd-v1).
 
+This driver follows [USB Manager](https://rap.ruff.io/raps/usb-manager) framework.
+
 ## Supported Engines
 
 * Ruff: >=1.4.0 <1.5.0
@@ -46,8 +48,11 @@ audioManager.on('unmount', function (audio)) {
 
 Install USB device managers
 
-- **managers:**  the USB devices managers which receives USB events to emit its own event with specific device instance. Take a camera manager as example. When a camera is plugged into USB interface, a `mount` event with camera instance will be emitted. Once the camera is unplugged, `unmount` event with the camera instance will be emitted.
+- **managers:** the USB devices managers which receives USB events to emit its own event with specific device instance. The managers should follow [USB Manager](https://rap.ruff.io/raps/usb-manager) framework.
+
 - **callback:** The callback will be invoked when the `install` is finished, this argument is optional. The callback will be given an argument  `(err)`, which specifies a possible error.
+
+Take a camera manager as example. When a camera is plugged into USB interface, a `mount` event with camera instance will be emitted. Once the camera is unplugged, `unmount` event with the camera instance will be emitted. Visit [USB Manager](https://rap.ruff.io/raps/usb-manager) for detailed usage.
 
 ## Contributing
 
