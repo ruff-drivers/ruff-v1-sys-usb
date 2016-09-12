@@ -2,7 +2,7 @@
 
 # Sys-usb Driver for Ruff
 
-Sys-usb managers the `mount` and `unmout` behaviour of USB devices, which have been installed into sys-usb.
+sys-usb provides a USB interface driver for USB devices. This driver works only for [Ruff MBD V1](https://rap.ruff.io/raps/ruff-mbd-v1).
 
 ## Supported Engines
 
@@ -10,16 +10,7 @@ Sys-usb managers the `mount` and `unmout` behaviour of USB devices, which have b
 
 ## Installing
 
-1. Execute following command and enter a **supported model** to install.
-
-```sh
-# Please replace `<device-id>` with a proper ID.
-# And this will be what you are going to query while `$('#<device-id>')`.
-rap device add <device-id>
-
-# Then enter a supported model, for example:
-# ? model: ruff-v1-sys-usb
-```
+This driver has been integrated in [Ruff MBD V1](https://rap.ruff.io/raps/ruff-mbd-v1).
 
 ## Usage
 
@@ -29,34 +20,34 @@ Here is the basic usage of this driver.
 var cameraManager = new CameraManager();
 var audioManager = new AudioManger();
 $('#usb').install(cameraManager, audioManager);
+
 cameraManager.on('mount', function (camera)) {
     // camera is mounted, invoke methods of camera
 });
+
 cameraManager.on('unmount', function (camera)) {
     // camera is unmounted
 });
+
 audioManager.on('mount', function (audio)) {
     // audio is mounted, invoke methods of audio
 });
+
 audioManager.on('unmount', function (audio)) {
     // audio is unmounted
 });
-
 ```
 
 ## API References
 
 ### Methods
 
-#### `install(...usbDeviceManagers[, callback])`
+#### `install(...managers[, callback])`
 
-Install usb device managers to be controlled by sys-usb.
+Install USB device managers
 
-- **usbDeviceManagers:** usbDeviceManagers is mutilple of usbDeviceManager which is instlled into sys-usb.
-When one usb device is pluged or unpluged, all of the installed usbDeviceManagers will be received `mount` or `unmount` event.
-Usb device manager must provide three mothods: `attach`, `detach` and `createDevice`. For more information, please reference the document of the usb device manager.
-
-- **callback:** No argument other than a possible error is given to the completion callback. The callback will be invoked when the `install` is finished, this argument is optional.
+- **managers:**  the USB devices managers which receives USB events to emit its own event with specific device instance. Take a camera manager as example. When a camera is plugged into USB interface, a `mount` event with camera instance will be emitted. Once the camera is unplugged, `unmount` event with the camera instance will be emitted.
+- **callback:** The callback will be invoked when the `install` is finished, this argument is optional. The callback will be given an argument  `(err)`, which specifies a possible error.
 
 ## Contributing
 
