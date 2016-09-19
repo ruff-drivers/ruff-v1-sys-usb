@@ -8,7 +8,7 @@ This driver follows [USB Manager](https://rap.ruff.io/raps/usb-manager) framewor
 
 ## Supported Engines
 
-* Ruff: >=1.4.0 <1.5.0
+* Ruff: >=1.4.0 <1.6.0
 
 ## Installing
 
