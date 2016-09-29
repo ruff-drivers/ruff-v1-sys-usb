@@ -7,6 +7,12 @@
 
 var assert = require('assert');
 var mock = require('ruff-mock');
+var any = mock.any;
+var when = mock.when;
+
+var EventEmitter = require('events');
+var fs = require('fs');
+var path = require('path');
 
 var CameraManager = require('./cameraManager');
 var HotplugMessage = require('./hotplugMessage');
@@ -47,7 +53,8 @@ describe('Driver for sys-usb', function () {
         cameraManager = new CameraManager();
         sysUsb = new SysUsb({}, {
             message: hotplugMessage,
-            kernel: kernel
+            kernel: kernel,
+            usbBusPath: path.join(__dirname, 'devices/link')
         });
     });
 
@@ -133,5 +140,33 @@ describe('Driver for sys-usb', function () {
             mock.verify(kernel).remove('ehci-platform');
             done();
         });
+    });
+
+    it('should create target devices which are already plugged when sysUsb install is invoked', function (done) {
+        var usbBusPath = path.join(__dirname, 'devices/link');
+        var deviceManager = mock(new EventEmitter(), true);
+        var actualDeviceNum = 0;
+        var devicesPath = fs.readdirSync(usbBusPath);
+        var ecpectedDeviceNum = devicesPath.length;
+        when(deviceManager).attach(any).then(function (callback) {
+            callback && callback();
+        });
+
+        devicesPath.forEach(function (devPath) {
+            var destPath = path.join(usbBusPath, fs.readlinkSync(path.join(usbBusPath, devPath)));
+            when(deviceManager).mountDevice(destPath).then(function () {
+                deviceManager.emit('mount');
+            });
+        });
+
+        deviceManager.on('mount', function () {
+            actualDeviceNum++;
+        });
+
+        sysUsb.install(deviceManager);
+        setTimeout(function () {
+            assert.equal(actualDeviceNum, ecpectedDeviceNum);
+            done();
+        }, 100);
     });
 });
