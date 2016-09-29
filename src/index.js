@@ -9,6 +9,9 @@ var assert = require('assert');
 var async = require('ruff-async');
 var driver = require('ruff-driver');
 
+var fs = require('fs');
+var path = require('path');
+
 var Message = require('./message');
 
 var USB_DRIVER_NAME = 'ehci-platform';
@@ -28,6 +31,7 @@ var SysUsbDevice = driver({
         this._devManagers = [];
         this._kernel = context.kernel || require('kernel-module');
         this._message = context.message || new Message();
+        this._usbBusPath = context.usbBusPath || '/sys/bus/usb/devices';
     },
     detach: function (callback) {
         async.series([
@@ -61,13 +65,30 @@ var SysUsbDevice = driver({
             async.series([
                 this._invokeDeviceAttach.bind(this),
                 this._listenUevent.bind(this),
-                this._installUsbDriver.bind(this)
+                function (next) {
+                    that._findPluggedDevice();
+                    that._installUsbDriver(next);
+                }
             ], function (error) {
                 if (error) {
                     callback && callback(error);
                     return;
                 }
                 callback && callback();
+            });
+        },
+
+        _findPluggedDevice: function () {
+            var that = this;
+            var items = fs.readdirSync(this._usbBusPath);
+            if (items.length === 0) {
+                return;
+            }
+            items.forEach(function (item) {
+                that.emit(
+                    'mount',
+                    path.join(that._usbBusPath, fs.readlinkSync(path.join(that._usbBusPath, item)))
+                );
             });
         },
 
