@@ -1,6 +1,6 @@
 {
   "name": "ruff-v1-sys-usb",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Sys-usb managers the `mount` and `unmount` behaviour of USB devices.",
   "author": "Nanchao Inc.",
   "license": "MIT",
@@ -19,7 +19,7 @@
   ],
   "main": "src/index.js",
   "engines": {
-    "ruff": ">=1.4.0 <1.6.0"
+    "ruff": ">=1.4.0 <1.7.0"
   },
   "boards": {
     "ruff-mbd-v1": "^4.1.0"
