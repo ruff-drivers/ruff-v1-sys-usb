@@ -14,7 +14,6 @@ var path = require('path');
 
 var Message = require('./message');
 
-var USB_DRIVER_NAME = 'ehci-platform';
 var EVENTS = ['mount', 'unmount'];
 
 function getCallback(argument) {
@@ -29,15 +28,13 @@ var SysUsbDevice = driver({
     attach: function (inputs, context) {
         this._driverInstalled = false;
         this._devManagers = [];
-        this._kernel = context.kernel || require('kernel-module');
         this._message = context.message || new Message();
         this._usbBusPath = context.usbBusPath || '/sys/bus/usb/devices';
     },
     detach: function (callback) {
         async.series([
             this._message.stop.bind(this._message),
-            this._invokeDeviceDetach.bind(this),
-            this._removeUsbDriver.bind(this)
+            this._invokeDeviceDetach.bind(this)
         ], callback);
     },
     exports: {
@@ -67,7 +64,7 @@ var SysUsbDevice = driver({
                 this._listenUevent.bind(this),
                 function (next) {
                     that._findPluggedDevice();
-                    that._installUsbDriver(next);
+                    next();
                 }
             ], function (error) {
                 if (error) {
@@ -106,44 +103,6 @@ var SysUsbDevice = driver({
             async.series(detaches, callback);
         },
 
-        _installUsbDriver: function (callback) {
-            if (this._driverInstalled) {
-                callback && callback();
-                return;
-            }
-
-            var that = this;
-            var installDriver = this._kernel.install.bind(this._kernel, USB_DRIVER_NAME);
-            syncToAsync(installDriver, function (error) {
-                if (error) {
-                    callback && callback(error);
-                    return;
-                }
-
-                that._driverInstalled = true;
-                callback && callback();
-            });
-        },
-
-        _removeUsbDriver: function (callback) {
-            if (!this._driverInstalled) {
-                callback && callback();
-                return;
-            }
-
-            var that = this;
-            var removeDriver = this._kernel.remove.bind(this._kernel, USB_DRIVER_NAME);
-            syncToAsync(removeDriver, function (error) {
-                if (error) {
-                    callback && callback(error);
-                    return;
-                }
-
-                that._driverInstalled = false;
-                callback && callback();
-            });
-        },
-
         _listenUevent: function (callback) {
             var that = this;
             this._message.on('uevent', function (event) {
@@ -167,13 +126,4 @@ module.exports = SysUsbDevice;
 function checkType(obj, type) {
     assert.ifError(typeof obj !== type && new TypeError('Option `' + obj + '` is expected to be a ' + type));
     return obj;
-}
-
-function syncToAsync(syncFunc, callback) {
-    try {
-        syncFunc();
-        callback();
-    } catch (error) {
-        callback(error);
-    }
 }

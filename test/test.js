@@ -22,12 +22,12 @@ require('t');
 
 var cameraMountMessage = {
     action: 'mount',
-    devPath: '/devices/usb/1-1',
+    devPath: '/devices/usb/1-1'
 };
 
 var unknownMountMessage = {
     action: 'mount',
-    devPath: '/devices/usb/1-2',
+    devPath: '/devices/usb/1-2'
 };
 
 var cameraUnmountMessage = {
@@ -43,17 +43,14 @@ var unknowUnmountMessage = {
 describe('Driver for sys-usb', function () {
     var sysUsb;
 
-    var kernel;
     var cameraManager;
     var hotplugMessage;
 
     beforeEach(function () {
-        kernel = mock.mockAny();
         hotplugMessage = new HotplugMessage();
         cameraManager = new CameraManager();
         sysUsb = new SysUsb({}, {
             message: hotplugMessage,
-            kernel: kernel,
             usbBusPath: path.join(__dirname, 'devices/link')
         });
     });
@@ -61,7 +58,6 @@ describe('Driver for sys-usb', function () {
     it('should invoke callback when `install` method get one manager', function (done) {
         sysUsb.install(cameraManager, function (error) {
             assert(cameraManager.isAttached);
-            mock.verify(kernel).install('ehci-platform');
             done(error);
         });
     });
@@ -69,15 +65,13 @@ describe('Driver for sys-usb', function () {
     it('should invoke callback when `install` method get two managers', function (done) {
         sysUsb.install(cameraManager, cameraManager, function (error) {
             assert(cameraManager.isAttached);
-            mock.verify(kernel).install('ehci-platform');
             done(error);
         });
     });
 
-    it('should invoke device attach and install usb driver when `install` method is invoked', function (done) {
+    it('should invoke device attach when `install` method is invoked', function (done) {
         sysUsb.install(cameraManager, function (error) {
             assert(cameraManager.isAttached);
-            mock.verify(kernel).install('ehci-platform');
             done(error);
         });
     });
@@ -96,7 +90,7 @@ describe('Driver for sys-usb', function () {
     it('should not receive any event while a unknown device is mounted', function (done) {
         sysUsb.install(cameraManager);
 
-        cameraManager.on('mount', function (device) {
+        cameraManager.on('mount', function () {
             done(new Error('should not receivce mount event'));
         });
 
@@ -124,7 +118,7 @@ describe('Driver for sys-usb', function () {
     it('should not receive any event while a unknown device is unmounted', function (done) {
         sysUsb.install(cameraManager);
 
-        cameraManager.on('unmount', function (device) {
+        cameraManager.on('unmount', function () {
             done(new Error('should not receivce unmount event'));
         });
 
@@ -132,12 +126,11 @@ describe('Driver for sys-usb', function () {
         setTimeout(done, 100);
     });
 
-    it('should invoke device detach and uninstall usb driver when sysUsb detach is invoked', function (done) {
+    it('should invoke device detach when sysUsb detach is invoked', function (done) {
         sysUsb.install(cameraManager);
 
         sysUsb.detach(function () {
             assert(cameraManager.isDetached);
-            mock.verify(kernel).remove('ehci-platform');
             done();
         });
     });
